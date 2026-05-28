@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | ReWear</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #111, #e63946);
+            padding: 20px;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-container h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .form-container p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .input-group input:focus {
+            border-color: #e63946;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: #111;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #e63946;
+        }
+
+        .bottom-text {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .bottom-text a {
+            color: #e63946;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .message {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-container">
+        <h1>Create Account</h1>
+        <p>Join the sustainable fashion community</p>
+
+        <form id="signupForm">
+
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="email" required>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" required>
+            </div>
+
+            <button type="submit" class="btn">Create Account</button>
+
+            <div class="message" id="message"></div>
+
+        </form>
+
+        <div class="bottom-text">
+            Already have an account?
+            <a href="login.html">Login</a>
+        </div>
+    </div>
+
+<script>
+
+    const signupForm = document.getElementById('signupForm');
+    const message = document.getElementById('message');
+
+    signupForm.addEventListener('submit', async (e) => {
+
+        e.preventDefault();
+
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+
+            const response = await fetch('http://localhost:5000/signup', {
+
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+
+                body: JSON.stringify({
+                    name,
+                    email,
+                    password
+                })
+
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+
+                message.style.color = 'green';
+                message.innerText = 'Account Created Successfully';
+
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+
+            }
+
+            else {
+
+                message.style.color = 'red';
+                message.innerText = data.message;
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.log(error);
+
+            message.style.color = 'red';
+            message.innerText = 'Server Error';
+
+        }
+
+    });
+
+</script>
+
+</body>
+
+</html>
