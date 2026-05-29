@@ -13,48 +13,26 @@ app.use(cors());
 app.use(express.json());
 
 
-// Serve Frontend Files
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-
 // MongoDB Connection
-
 mongoose.connect(process.env.MONGO_URI)
-
-    .then(() => {
-        console.log('MongoDB Connected');
-    })
-
-    .catch((err) => {
-        console.log(err);
-    });
-
-
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.log(err));
 
 
 // USER SCHEMA
-
 const userSchema = new mongoose.Schema({
-
     name: String,
-
     email: {
         type: String,
         unique: true
     },
-
     password: String
-
 });
 
 const User = mongoose.model('User', userSchema);
 
 
-
-
-// SIGNUP
-
+// SIGNUP ROUTE
 app.post('/signup', async (req, res) => {
 
     try {
@@ -64,12 +42,10 @@ app.post('/signup', async (req, res) => {
         const existingUser = await User.findOne({ email });
 
         if (existingUser) {
-
             return res.json({
                 success: false,
                 message: 'User already exists'
             });
-
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -93,9 +69,9 @@ app.post('/signup', async (req, res) => {
 
         console.log(error);
 
-        res.json({
+        res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: error.message
         });
 
     }
@@ -103,10 +79,7 @@ app.post('/signup', async (req, res) => {
 });
 
 
-
-
-// LOGIN
-
+// LOGIN ROUTE
 app.post('/login', async (req, res) => {
 
     try {
@@ -116,36 +89,28 @@ app.post('/login', async (req, res) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-
             return res.json({
                 success: false,
                 message: 'Invalid Email'
             });
-
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-
             return res.json({
                 success: false,
                 message: 'Invalid Password'
             });
-
         }
 
         res.json({
-
             success: true,
-
             message: 'Login Successful',
-
             user: {
                 name: user.name,
                 email: user.email
             }
-
         });
 
     }
@@ -154,9 +119,9 @@ app.post('/login', async (req, res) => {
 
         console.log(error);
 
-        res.json({
+        res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: error.message
         });
 
     }
@@ -164,22 +129,19 @@ app.post('/login', async (req, res) => {
 });
 
 
+// STATIC FILES MUST COME AFTER ROUTES
+app.use(express.static(path.join(__dirname, 'public')));
 
 
-// Homepage Route
-
+// HOMEPAGE
 app.get('/', (req, res) => {
-
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
-
 });
 
 
-
-
 // SERVER
-
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
